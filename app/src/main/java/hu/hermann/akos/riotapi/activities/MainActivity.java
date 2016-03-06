@@ -14,11 +14,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import hu.hermann.akos.riotapi.R;
+import hu.hermann.akos.riotapi.domain.Summoner;
 import hu.hermann.akos.riotapi.domain.response.FeaturedGames;
 import hu.hermann.akos.riotapi.rest.RiotClient;
 import hu.hermann.akos.riotapi.rest.ServiceGenerator;
@@ -32,14 +36,10 @@ public class MainActivity extends AppCompatActivity
 
     private FeaturedGames featuredGames;
 
-    @Bind(R.id.featured_games_recycler_view)
-    RecyclerView recyclerView;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        ButterKnife.bind(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -52,43 +52,21 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        getFeaturedGames();
+        getSummoner();
+
+        /*getFeaturedGames();
 
         recyclerView.setHasFixedSize(true);
         LinearLayoutManager llm = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(llm);
+        recyclerView.setLayoutManager(llm);*/
 
 
 
-    }
-
-    private void getFeaturedGames() {
-
-        RiotClient client = ServiceGenerator.createService(RiotClient.class);
-        Call<FeaturedGames> games = client.getFeaturedGames();
-        games.enqueue(new Callback<FeaturedGames>() {
-            @Override
-            public void onResponse(Call<FeaturedGames> call, Response<FeaturedGames> response) {
-                featuredGames = response.body();
-                addGamesToList(featuredGames);
-            }
-
-            @Override
-            public void onFailure(Call<FeaturedGames> call, Throwable t) {
-                t.printStackTrace();
-                showError();
-            }
-        });
     }
 
     private void showError() {
         //TODO
         Toast.makeText(this, "error", Toast.LENGTH_LONG).show();
-    }
-
-    private void addGamesToList(FeaturedGames featuredGames) {
-        FeaturedGameAdapter featuredGameAdapter = new FeaturedGameAdapter(featuredGames.getGameList());
-        recyclerView.setAdapter(featuredGameAdapter);
     }
 
     @Override
@@ -138,5 +116,26 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public void getSummoner() {
+        RiotClient client = ServiceGenerator.createService(RiotClient.class);
+        Call<JsonElement> call = client.getSummoner("eune", "FTP hofeee");
+        call.enqueue(new Callback<JsonElement>() {
+            @Override
+            public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
+                String json = response.body().toString();
+                String[] splits = json.split(":", 2);
+                String useful = splits[1];
+                String summonerJson = useful.substring(0, useful.length()-1);
+                Summoner summoner = new Gson().fromJson(summonerJson, Summoner.class);
+            }
+
+            @Override
+            public void onFailure(Call<JsonElement> call, Throwable t) {
+
+            }
+        });
+
     }
 }
