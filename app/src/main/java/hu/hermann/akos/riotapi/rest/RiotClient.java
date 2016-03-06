@@ -17,10 +17,13 @@ import retrofit2.http.Path;
  */
 public interface RiotClient {
 
-    public static final String API_KEY = "api_key=b3b0704d-94b0-4baf-bfda-6ea0c76af418";
+    String API_KEY = "api_key=b3b0704d-94b0-4baf-bfda-6ea0c76af418";
 
     @GET("/api/lol/{region}/v1.4/summoner/by-name/{summoner}?"+API_KEY)
     Call<JsonElement> getSummoner(@Path("region") String region, @Path("summoner") String summoner);
+
+    @GET("/api/lol/{region}/v2.5/league/by-summoner/{summonerIds}/entry?"+API_KEY)
+    Call<JsonElement> getRankInfo(@Path("region") String region, @Path("summonerIds") String ids);
 
     @GET("/observer-mode/rest/featured?"+API_KEY)
     Call<FeaturedGames> getFeaturedGames();
