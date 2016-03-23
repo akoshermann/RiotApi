@@ -3,14 +3,12 @@ package hu.hermann.akos.riotapi.rest;
 
 import com.google.gson.JsonElement;
 
-import java.util.List;
-
-import hu.hermann.akos.riotapi.domain.Summoner;
 import hu.hermann.akos.riotapi.domain.response.FeaturedGames;
-import okhttp3.ResponseBody;
+import hu.hermann.akos.riotapi.domain.matchhistory.MatchHistory;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 /**
  * Created by hofee on 2016. 03. 02..
@@ -27,4 +25,7 @@ public interface RiotClient {
 
     @GET("/observer-mode/rest/featured?"+API_KEY)
     Call<FeaturedGames> getFeaturedGames();
+
+    @GET("/api/lol/{region}/v2.2/matchlist/by-summoner/{summonerId}?"+API_KEY)
+    Call<MatchHistory> getMatchHistory(@Path("region") String region, @Path("summonerId") Long summoner, @Query("beginIndex") int begin, @Query("endIndex") int end);
 }

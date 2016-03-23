@@ -7,8 +7,9 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -23,11 +24,12 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import hu.hermann.akos.riotapi.R;
-import hu.hermann.akos.riotapi.domain.Summoner;
-import hu.hermann.akos.riotapi.domain.response.FeaturedGames;
+import hu.hermann.akos.riotapi.domain.player.Summoner;
+import hu.hermann.akos.riotapi.domain.matchhistory.MatchHistory;
 import hu.hermann.akos.riotapi.domain.response.RankInfo;
 import hu.hermann.akos.riotapi.rest.RiotClient;
 import hu.hermann.akos.riotapi.rest.ServiceGenerator;
+import hu.hermann.akos.riotapi.utils.MatchHistoryAdapter;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -35,7 +37,6 @@ import retrofit2.Response;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private FeaturedGames featuredGames;
     private Summoner summoner;
     private RankInfo rankInfo;
 
@@ -44,6 +45,9 @@ public class MainActivity extends AppCompatActivity
 
     @Bind(R.id.tv_rank)
     TextView tvRank;
+
+    @Bind(R.id.match_history_recycler_view)
+    RecyclerView matchHistoryRecyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,14 +66,6 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         getSummoner();
-
-        /*getFeaturedGames();
-
-        recyclerView.setHasFixedSize(true);
-        LinearLayoutManager llm = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(llm);*/
-
-
 
     }
 
@@ -136,6 +132,7 @@ public class MainActivity extends AppCompatActivity
                 String summonerJson = splitStringToUseful(response.body().toString());
                 summoner = new Gson().fromJson(summonerJson, Summoner.class);
                 getSummonerRank(summoner.getId());
+                getMatchHistory(summoner.getId());
             }
 
             @Override
@@ -162,6 +159,25 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onFailure(Call<JsonElement> call, Throwable t) {
+            }
+        });
+    }
+
+    private void getMatchHistory(Long id){
+        RiotClient riotClient = ServiceGenerator.createService(RiotClient.class);
+        Call<MatchHistory> call = riotClient.getMatchHistory("eune", id, 0, 10);
+        call.enqueue(new Callback<MatchHistory>() {
+            @Override
+            public void onResponse(Call<MatchHistory> call, Response<MatchHistory> response) {
+                MatchHistory matchHistory = response.body();
+                MatchHistoryAdapter adapter = new MatchHistoryAdapter(matchHistory);
+                matchHistoryRecyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+                matchHistoryRecyclerView.setAdapter(adapter);
+            }
+
+            @Override
+            public void onFailure(Call<MatchHistory> call, Throwable t) {
+
             }
         });
     }

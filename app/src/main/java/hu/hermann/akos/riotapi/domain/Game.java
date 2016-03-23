@@ -3,6 +3,9 @@ package hu.hermann.akos.riotapi.domain;
 import java.io.Serializable;
 import java.util.List;
 
+import hu.hermann.akos.riotapi.domain.player.Observer;
+import hu.hermann.akos.riotapi.domain.player.Player;
+
 /**
  * Created by hofee on 2016. 03. 03..
  */

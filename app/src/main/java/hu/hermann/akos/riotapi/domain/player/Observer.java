@@ -1,4 +1,4 @@
-package hu.hermann.akos.riotapi.domain;
+package hu.hermann.akos.riotapi.domain.player;
 
 import java.io.Serializable;
 
