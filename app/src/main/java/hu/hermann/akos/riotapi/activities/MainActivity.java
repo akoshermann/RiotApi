@@ -1,6 +1,7 @@
 package hu.hermann.akos.riotapi.activities;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -12,6 +13,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,21 +26,25 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import hu.hermann.akos.riotapi.R;
-import hu.hermann.akos.riotapi.domain.player.Summoner;
+import hu.hermann.akos.riotapi.contstants.Flags;
 import hu.hermann.akos.riotapi.domain.matchhistory.MatchHistory;
+import hu.hermann.akos.riotapi.domain.player.Summoner;
 import hu.hermann.akos.riotapi.domain.response.RankInfo;
+import hu.hermann.akos.riotapi.interfaces.IImageLoader;
 import hu.hermann.akos.riotapi.rest.RiotClient;
 import hu.hermann.akos.riotapi.rest.ServiceGenerator;
 import hu.hermann.akos.riotapi.utils.MatchHistoryAdapter;
+import hu.hermann.akos.riotapi.utils.RecyclerItemClickListener;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, IImageLoader {
 
     private Summoner summoner;
     private RankInfo rankInfo;
+    private MatchHistory matchHistory;
 
     @Bind(R.id.tv_summoner_name)
     TextView tvName;
@@ -64,8 +70,15 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
-        getSummoner();
+        if(summoner == null){
+            getSummoner();
+        } else
+                if(matchHistory == null){
+                    getMatchHistory(summoner.getId());
+                } else {
+                    showInfo();
+                    showMatchHistory(matchHistory);
+                }
 
     }
 
@@ -169,10 +182,8 @@ public class MainActivity extends AppCompatActivity
         call.enqueue(new Callback<MatchHistory>() {
             @Override
             public void onResponse(Call<MatchHistory> call, Response<MatchHistory> response) {
-                MatchHistory matchHistory = response.body();
-                MatchHistoryAdapter adapter = new MatchHistoryAdapter(matchHistory);
-                matchHistoryRecyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
-                matchHistoryRecyclerView.setAdapter(adapter);
+                matchHistory = response.body();
+                showMatchHistory(matchHistory);
             }
 
             @Override
@@ -180,6 +191,20 @@ public class MainActivity extends AppCompatActivity
 
             }
         });
+    }
+
+    private void showMatchHistory(final MatchHistory matchHistory) {
+        MatchHistoryAdapter adapter = new MatchHistoryAdapter(MainActivity.this, matchHistory);
+        matchHistoryRecyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+        matchHistoryRecyclerView.setAdapter(adapter);
+        matchHistoryRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(MainActivity.this, new RecyclerItemClickListener.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                Intent intent = new Intent(MainActivity.this, MatchDetailsActivity.class);
+                intent.putExtra(Flags.MATCH_DETAILS, matchHistory.getMatches().get(position));
+                startActivity(intent);
+            }
+        }));
     }
 
     private String listToString(List<Long> ids) {
@@ -207,5 +232,10 @@ public class MainActivity extends AppCompatActivity
 
     private String getRankString(int position) {
         return rankInfo.getTier() + " " + rankInfo.getEntries().get(position).getDivision();
+    }
+
+    @Override
+    public void setImage(Bitmap bitmap) {
+
     }
 }

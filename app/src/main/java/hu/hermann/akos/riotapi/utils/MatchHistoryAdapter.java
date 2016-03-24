@@ -1,5 +1,6 @@
 package hu.hermann.akos.riotapi.utils;
 
+import android.content.Context;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -16,9 +17,11 @@ import hu.hermann.akos.riotapi.domain.matchhistory.MatchHistory;
 public class MatchHistoryAdapter extends RecyclerView.Adapter<MatchHistoryAdapter.ViewHolder> {
 
     private MatchHistory matchHistory;
+    private Context context;
 
-    public MatchHistoryAdapter(MatchHistory matchHistory) {
+    public MatchHistoryAdapter(Context context, MatchHistory matchHistory) {
         this.matchHistory = matchHistory;
+        this.context = context;
     }
 
     @Override
@@ -37,6 +40,7 @@ public class MatchHistoryAdapter extends RecyclerView.Adapter<MatchHistoryAdapte
     public int getItemCount() {
         return matchHistory.getMatches().size();
     }
+
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private CardView cardView;
