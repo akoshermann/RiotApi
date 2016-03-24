@@ -3,6 +3,7 @@ package hu.hermann.akos.riotapi.rest;
 
 import com.google.gson.JsonElement;
 
+import hu.hermann.akos.riotapi.domain.Champion;
 import hu.hermann.akos.riotapi.domain.response.FeaturedGames;
 import hu.hermann.akos.riotapi.domain.matchhistory.MatchHistory;
 import retrofit2.Call;
@@ -28,4 +29,7 @@ public interface RiotClient {
 
     @GET("/api/lol/{region}/v2.2/matchlist/by-summoner/{summonerId}?"+API_KEY)
     Call<MatchHistory> getMatchHistory(@Path("region") String region, @Path("summonerId") Long summoner, @Query("beginIndex") int begin, @Query("endIndex") int end);
+
+    @GET("/api/lol/static-data/{region}/v1.2/champion/{id}?"+API_KEY)
+    Call<Champion> getChampionInfo(@Path("region") String region, @Path("id") Long championId);
 }

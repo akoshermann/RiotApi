@@ -21,18 +21,23 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import hu.hermann.akos.riotapi.R;
 import hu.hermann.akos.riotapi.contstants.Flags;
+import hu.hermann.akos.riotapi.domain.Champion;
+import hu.hermann.akos.riotapi.domain.matchhistory.Match;
 import hu.hermann.akos.riotapi.domain.matchhistory.MatchHistory;
 import hu.hermann.akos.riotapi.domain.player.Summoner;
 import hu.hermann.akos.riotapi.domain.response.RankInfo;
 import hu.hermann.akos.riotapi.interfaces.IImageLoader;
 import hu.hermann.akos.riotapi.rest.RiotClient;
 import hu.hermann.akos.riotapi.rest.ServiceGenerator;
+import hu.hermann.akos.riotapi.utils.ImageLoader;
 import hu.hermann.akos.riotapi.utils.MatchHistoryAdapter;
 import hu.hermann.akos.riotapi.utils.RecyclerItemClickListener;
 import retrofit2.Call;
@@ -45,6 +50,8 @@ public class MainActivity extends AppCompatActivity
     private Summoner summoner;
     private RankInfo rankInfo;
     private MatchHistory matchHistory;
+    private List<Bitmap> championIcons;
+    private int counter = 0;
 
     @Bind(R.id.tv_summoner_name)
     TextView tvName;
@@ -67,6 +74,7 @@ public class MainActivity extends AppCompatActivity
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
+        championIcons = new ArrayList<>();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -183,7 +191,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onResponse(Call<MatchHistory> call, Response<MatchHistory> response) {
                 matchHistory = response.body();
-                showMatchHistory(matchHistory);
+                getChampions(matchHistory);
             }
 
             @Override
@@ -191,6 +199,45 @@ public class MainActivity extends AppCompatActivity
 
             }
         });
+    }
+
+    private void getChampions(final MatchHistory matchHistory) {
+        final List<Champion> champions = new ArrayList<>();
+        final int[] counter = {0};
+        for(Match match : matchHistory.getMatches()){
+            RiotClient riotClient = ServiceGenerator.createService(RiotClient.class);
+            Call<Champion> call = riotClient.getChampionInfo("eune", match.getChampion());
+            call.enqueue(new Callback<Champion>() {
+                @Override
+                public void onResponse(Call<Champion> call, Response<Champion> response) {
+                    matchHistory.getMatches().get(counter[0]).setChampionName(response.body().getName());
+                    counter[0]++;
+                    champions.add(response.body());
+                    if (counter[0] == matchHistory.getMatches().size()) {
+                        getChampionIcons(champions);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Champion> call, Throwable t) {
+
+                }
+            });
+        }
+    }
+
+    private void getChampionIcons(List<Champion> champions) {
+        for(Champion champion : champions){
+            ImageLoader imageLoader = new ImageLoader("http://ddragon.leagueoflegends.com/cdn/6.6.1/img/champion/"+champion.getKey()+".png", MainActivity.this);
+            imageLoader.execute((Void)null);
+        }
+    }
+
+    private void addIconsToModel() {
+        for(int i = 0; i < matchHistory.getMatches().size(); ++i){
+            matchHistory.getMatches().get(i).setChampionIcon(championIcons.get(i));
+        }
+        showMatchHistory(matchHistory);
     }
 
     private void showMatchHistory(final MatchHistory matchHistory) {
@@ -236,6 +283,10 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void setImage(Bitmap bitmap) {
-
+        counter++;
+        championIcons.add(bitmap);
+        if(counter == matchHistory.getMatches().size()){
+            addIconsToModel();
+        }
     }
 }

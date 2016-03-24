@@ -45,8 +45,6 @@ public class FeaturedGameAdapter extends RecyclerView.Adapter<FeaturedGameAdapte
         private TextView tvGameMode;
         public ViewHolder(View itemView) {
             super(itemView);
-            cardView = (CardView) itemView.findViewById(R.id.card_view);
-            tvGameMode = (TextView) itemView.findViewById(R.id.game_mode);
         }
     }
 }

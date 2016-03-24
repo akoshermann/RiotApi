@@ -1,5 +1,7 @@
 package hu.hermann.akos.riotapi.domain.matchhistory;
 
+import android.graphics.Bitmap;
+
 import java.io.Serializable;
 
 /**
@@ -15,6 +17,8 @@ public class Match implements Serializable {
     private String role;
     private String platformId;
     private String lane;
+    private Bitmap championIcon;
+    private String championName;
 
     public Long getTimeStamp() {
         return timeStamp;
@@ -78,5 +82,21 @@ public class Match implements Serializable {
 
     public void setLane(String lane) {
         this.lane = lane;
+    }
+
+    public Bitmap getChampionIcon() {
+        return championIcon;
+    }
+
+    public void setChampionIcon(Bitmap championIcon) {
+        this.championIcon = championIcon;
+    }
+
+    public String getChampionName() {
+        return championName;
+    }
+
+    public void setChampionName(String championName) {
+        this.championName = championName;
     }
 }
