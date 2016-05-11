@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="1">
+
+    <TextView
+        android:layout_width="174dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Large Text"
+        android:id="@+id/list_item_summoner_name"
+        android:layout_gravity="center_horizontal"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/list_item_champion_icon"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <ImageView
+        android:layout_width="72dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/list_item_champion_icon"
+        android:layout_weight="0.14"
+        android:layout_alignParentTop="true"
+        android:layout_alignBottom="@+id/list_item_kda_text" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New Text"
+        android:id="@+id/list_item_level_text"
+        android:layout_below="@+id/list_item_summoner_name"
+        android:layout_alignRight="@+id/list_item_summoner_name"
+        android:layout_alignEnd="@+id/list_item_summoner_name"
+        android:layout_toRightOf="@+id/list_item_champion_icon"
+        android:layout_toEndOf="@+id/list_item_champion_icon" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New Text"
+        android:id="@+id/list_item_gold_text"
+        android:layout_below="@+id/list_item_level_text"
+        android:layout_toRightOf="@+id/list_item_champion_icon"
+        android:layout_alignRight="@+id/list_item_level_text"
+        android:layout_alignEnd="@+id/list_item_level_text" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New Text"
+        android:id="@+id/list_item_kda_text"
+        android:layout_below="@+id/list_item_gold_text"
+        android:layout_alignLeft="@+id/list_item_gold_text"
+        android:layout_alignStart="@+id/list_item_gold_text"
+        android:layout_alignRight="@+id/list_item_gold_text"
+        android:layout_alignEnd="@+id/list_item_gold_text" />
+
+</RelativeLayout>
