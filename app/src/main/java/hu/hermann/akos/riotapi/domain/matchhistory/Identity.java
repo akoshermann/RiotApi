@@ -10,7 +10,7 @@ import java.io.Serializable;
 public class Identity implements Serializable {
 
     private Long profileIcon;
-    private Uri matchHistoryUri;
+    private String matchHistoryUri;
     private String summonerName;
     private Long summonerId;
 
@@ -22,11 +22,11 @@ public class Identity implements Serializable {
         this.profileIcon = profileIcon;
     }
 
-    public Uri getMatchHistoryUri() {
+    public String getMatchHistoryUri() {
         return matchHistoryUri;
     }
 
-    public void setMatchHistoryUri(Uri matchHistoryUri) {
+    public void setMatchHistoryUri(String matchHistoryUri) {
         this.matchHistoryUri = matchHistoryUri;
     }
 

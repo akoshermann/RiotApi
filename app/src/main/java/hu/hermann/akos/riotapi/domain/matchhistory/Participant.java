@@ -24,6 +24,24 @@ public class Participant implements Serializable {
     private Long championId;
     private Long teamId;
     private String highestAchievedSeasonTier;
+    private String role;
+    private String lane;
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public String getLane() {
+        return lane;
+    }
+
+    public void setLane(String lane) {
+        this.lane = lane;
+    }
 
     public List<Mastery> getMasteries() {
         return masteries;

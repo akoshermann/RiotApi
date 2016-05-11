@@ -11,18 +11,18 @@ public class Team implements Serializable {
     private List<Ban> bans;
     private boolean firstBlood;
     private boolean firstTurret;
-    boolean firstInhibitor;
-    boolean winner;
-    boolean firstDragon;
+    private boolean firstInhibitor;
+    private boolean winner;
+    private boolean firstDragon;
     private int vilemawKills;
     private int baronKills;
     private Long teamId;
     private int inhibitorKills;
     private int dominionVictoryScore;
     private int riftHeraldKills;
-    private int firstRiftHerald;
+    private boolean firstRiftHerald;
     private int towerKills;
-    private int firstBaron;
+    private boolean firstBaron;
     private int dragonKills;
 
     public List<Ban> getBans() {
@@ -121,11 +121,11 @@ public class Team implements Serializable {
         this.riftHeraldKills = riftHeraldKills;
     }
 
-    public int getFirstRiftHerald() {
+    public boolean isFirstRiftHerald() {
         return firstRiftHerald;
     }
 
-    public void setFirstRiftHerald(int firstRiftHerald) {
+    public void setFirstRiftHerald(boolean firstRiftHerald) {
         this.firstRiftHerald = firstRiftHerald;
     }
 
@@ -137,11 +137,11 @@ public class Team implements Serializable {
         this.towerKills = towerKills;
     }
 
-    public int getFirstBaron() {
+    public boolean isFirstBaron() {
         return firstBaron;
     }
 
-    public void setFirstBaron(int firstBaron) {
+    public void setFirstBaron(boolean firstBaron) {
         this.firstBaron = firstBaron;
     }
 

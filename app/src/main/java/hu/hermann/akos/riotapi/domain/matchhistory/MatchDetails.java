@@ -15,7 +15,7 @@ public class MatchDetails implements Serializable {
     private GameType matchType;
     private Long matchCreation;
     private List<Participant> participants;
-    private Long platformId;
+    private String platformId;
     private GameMode matchMode;
     private List<ParticipantIdentities> participantIdentities;
     private String matchVersion;
@@ -58,11 +58,11 @@ public class MatchDetails implements Serializable {
         this.participants = participants;
     }
 
-    public Long getPlatformId() {
+    public String getPlatformId() {
         return platformId;
     }
 
-    public void setPlatformId(Long platformId) {
+    public void setPlatformId(String platformId) {
         this.platformId = platformId;
     }
 

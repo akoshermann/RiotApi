@@ -8,16 +8,26 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import hu.hermann.akos.riotapi.R;
+import hu.hermann.akos.riotapi.contstants.Flags;
+import hu.hermann.akos.riotapi.domain.matchhistory.MatchDetails;
 import hu.hermann.akos.riotapi.interfaces.IImageLoader;
+import hu.hermann.akos.riotapi.rest.RiotClient;
+import hu.hermann.akos.riotapi.rest.ServiceGenerator;
 import hu.hermann.akos.riotapi.utils.ImageLoader;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MatchDetailsActivity extends AppCompatActivity implements IImageLoader{
     @Bind(R.id.imageView)
     ImageView imageView;
+
+    private MatchDetails matchDetails;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,9 +46,29 @@ public class MatchDetailsActivity extends AppCompatActivity implements IImageLoa
             }
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        
-        getImages();
 
+        if(getIntent().hasExtra(Flags.MATCH_DETAILS)){
+            getMatchDetails(getIntent().getLongExtra(Flags.MATCH_DETAILS, 1l));
+        }
+
+
+    }
+
+    private void getMatchDetails(Long matchId) {
+        RiotClient client = ServiceGenerator.createService(RiotClient.class);
+        Call<MatchDetails> matchDetailsCall = client.getMatchDetails("eune", matchId);
+        matchDetailsCall.enqueue(new Callback<MatchDetails>() {
+            @Override
+            public void onResponse(Call<MatchDetails> call, Response<MatchDetails> response) {
+                matchDetails = response.body();
+            }
+
+            @Override
+            public void onFailure(Call<MatchDetails> call, Throwable t) {
+                t.printStackTrace();
+                Toast.makeText(MatchDetailsActivity.this, "error", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void getImages() {
@@ -50,4 +80,6 @@ public class MatchDetailsActivity extends AppCompatActivity implements IImageLoa
     public void setImage(Bitmap bitmap) {
         imageView.setImageBitmap(bitmap);
     }
+
+
 }

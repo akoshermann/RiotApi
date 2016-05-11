@@ -248,7 +248,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onItemClick(View view, int position) {
                 Intent intent = new Intent(MainActivity.this, MatchDetailsActivity.class);
-                intent.putExtra(Flags.MATCH_DETAILS, matchHistory.getMatches().get(position));
+                intent.putExtra(Flags.MATCH_DETAILS, matchHistory.getMatches().get(position).getMatchId());
                 startActivity(intent);
             }
         }));
