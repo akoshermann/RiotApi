@@ -5,19 +5,32 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import hu.hermann.akos.riotapi.R;
+import hu.hermann.akos.riotapi.contstants.Flags;
+import hu.hermann.akos.riotapi.domain.matchhistory.MatchDetails;
 import hu.hermann.akos.riotapi.interfaces.IImageLoader;
+import hu.hermann.akos.riotapi.rest.RiotClient;
+import hu.hermann.akos.riotapi.rest.ServiceGenerator;
 import hu.hermann.akos.riotapi.utils.ImageLoader;
+import hu.hermann.akos.riotapi.utils.MatchDetailsPlayerAdapter;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MatchDetailsActivity extends AppCompatActivity implements IImageLoader{
-    @Bind(R.id.imageView)
-    ImageView imageView;
+    @Bind(R.id.teams)
+    RecyclerView teams;
+
+    private MatchDetails matchDetails;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,18 +49,40 @@ public class MatchDetailsActivity extends AppCompatActivity implements IImageLoa
             }
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        
-        getImages();
+
+        if(getIntent().hasExtra(Flags.MATCH_DETAILS)){
+            getMatchDetails(getIntent().getLongExtra(Flags.MATCH_DETAILS, 1l));
+        }
+
 
     }
 
-    private void getImages() {
-        ImageLoader imageLoader = new ImageLoader("http://ddragon.leagueoflegends.com/cdn/6.6.1/img/champion/Aatrox.png", this);
-        imageLoader.execute((Void) null);
+    private void getMatchDetails(Long matchId) {
+        RiotClient client = ServiceGenerator.createService(RiotClient.class);
+        Call<MatchDetails> matchDetailsCall = client.getMatchDetails("eune", matchId);
+        matchDetailsCall.enqueue(new Callback<MatchDetails>() {
+            @Override
+            public void onResponse(Call<MatchDetails> call, Response<MatchDetails> response) {
+                matchDetails = response.body();
+                initList();
+            }
+
+            @Override
+            public void onFailure(Call<MatchDetails> call, Throwable t) {
+                t.printStackTrace();
+                Toast.makeText(MatchDetailsActivity.this, "error", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void initList() {
+        MatchDetailsPlayerAdapter adapter = new MatchDetailsPlayerAdapter(matchDetails);
+        teams.setLayoutManager(new LinearLayoutManager(MatchDetailsActivity.this));
+        teams.setAdapter(adapter);
     }
 
     @Override
     public void setImage(Bitmap bitmap) {
-        imageView.setImageBitmap(bitmap);
+
     }
 }
