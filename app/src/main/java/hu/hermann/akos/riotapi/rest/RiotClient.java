@@ -22,6 +22,9 @@ public interface RiotClient {
     @GET("/api/lol/{region}/v1.4/summoner/by-name/{summoner}?"+API_KEY)
     Call<JsonElement> getSummoner(@Path("region") String region, @Path("summoner") String summoner);
 
+    @GET("/api/lol/{region}/v1.4/summoner/{summonerIds}?"+API_KEY)
+    Call<JsonElement> getSummonersById(@Path("region") String region, @Path("summonerIds") String summonerIds);
+
     @GET("/api/lol/{region}/v2.5/league/by-summoner/{summonerIds}/entry?"+API_KEY)
     Call<JsonElement> getRankInfo(@Path("region") String region, @Path("summonerIds") String ids);
 

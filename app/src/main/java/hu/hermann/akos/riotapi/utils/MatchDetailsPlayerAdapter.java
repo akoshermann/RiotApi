@@ -1,6 +1,5 @@
 package hu.hermann.akos.riotapi.utils;
 
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,7 +30,7 @@ public class MatchDetailsPlayerAdapter extends RecyclerView.Adapter<MatchDetails
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.summonerNameText.setText(matchDetails.getParticipants().get(position).getHighestAchievedSeasonTier());
+        holder.summonerNameText.setText(matchDetails.getParticipantIdentities().get(position).getPlayer().getSummonerName());
 //        holder.levelText.setText(matchDetails.getParticipants().get(position).getStats().getChampLevel());
         holder.goldText.setText(String.valueOf(matchDetails.getParticipants().get(position).getStats().getGoldEarned()));
         holder.kdaText.setText(matchDetails.getParticipants().get(position).getStats().getKills() +"/" + matchDetails.getParticipants().get(position).getStats().getDeaths() +"/"+

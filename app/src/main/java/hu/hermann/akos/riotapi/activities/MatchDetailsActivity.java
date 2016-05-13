@@ -9,18 +9,19 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.Toast;
+
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import hu.hermann.akos.riotapi.R;
 import hu.hermann.akos.riotapi.contstants.Flags;
 import hu.hermann.akos.riotapi.domain.matchhistory.MatchDetails;
+import hu.hermann.akos.riotapi.domain.player.Summoner;
 import hu.hermann.akos.riotapi.interfaces.IImageLoader;
 import hu.hermann.akos.riotapi.rest.RiotClient;
 import hu.hermann.akos.riotapi.rest.ServiceGenerator;
-import hu.hermann.akos.riotapi.utils.ImageLoader;
 import hu.hermann.akos.riotapi.utils.MatchDetailsPlayerAdapter;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -31,6 +32,7 @@ public class MatchDetailsActivity extends AppCompatActivity implements IImageLoa
     RecyclerView teams;
 
     private MatchDetails matchDetails;
+    private List<Summoner> summonerList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +76,7 @@ public class MatchDetailsActivity extends AppCompatActivity implements IImageLoa
             }
         });
     }
+
 
     private void initList() {
         MatchDetailsPlayerAdapter adapter = new MatchDetailsPlayerAdapter(matchDetails);
