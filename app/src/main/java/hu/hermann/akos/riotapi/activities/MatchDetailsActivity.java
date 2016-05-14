@@ -27,7 +27,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MatchDetailsActivity extends AppCompatActivity implements IImageLoader{
+public class MatchDetailsActivity extends AppCompatActivity{
     @Bind(R.id.teams)
     RecyclerView teams;
 
@@ -82,10 +82,5 @@ public class MatchDetailsActivity extends AppCompatActivity implements IImageLoa
         MatchDetailsPlayerAdapter adapter = new MatchDetailsPlayerAdapter(matchDetails);
         teams.setLayoutManager(new LinearLayoutManager(MatchDetailsActivity.this));
         teams.setAdapter(adapter);
-    }
-
-    @Override
-    public void setImage(Bitmap bitmap) {
-
     }
 }

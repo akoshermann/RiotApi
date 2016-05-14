@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
+import hu.hermann.akos.riotapi.domain.Champion;
 import hu.hermann.akos.riotapi.interfaces.IImageLoader;
 
 /**
@@ -17,12 +18,14 @@ import hu.hermann.akos.riotapi.interfaces.IImageLoader;
  */
 public class ImageLoader extends AsyncTask<Void, Void, byte[]> {
 
-    private String url;
+    private Champion champion;
     private Context context;
+    private String url;
 
-    public ImageLoader(String url, Context context) {
-        this.url = url;
+    public ImageLoader(Champion champion, Context context) {
+        this.champion = champion;
         this.context = context;
+        url = "http://ddragon.leagueoflegends.com/cdn/6.6.1/img/champion/"+champion.getKey()+".png";
     }
 
     @Override
@@ -46,6 +49,6 @@ public class ImageLoader extends AsyncTask<Void, Void, byte[]> {
     @Override
     protected void onPostExecute(byte[] bytes) {
         Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-        ((IImageLoader) context).setImage(bitmap);
+        ((IImageLoader) context).setChampion(champion, bitmap);
     }
 }
