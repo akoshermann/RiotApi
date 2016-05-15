@@ -27,7 +27,9 @@
             android:id="@+id/list_item_champion_icon"
             android:layout_weight="0.14"
             android:layout_alignParentTop="true"
-            android:layout_alignBottom="@+id/list_item_kda_text" />
+            android:layout_alignBottom="@+id/list_item_kda_text"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"/>
 
         <TextView
             android:layout_width="wrap_content"

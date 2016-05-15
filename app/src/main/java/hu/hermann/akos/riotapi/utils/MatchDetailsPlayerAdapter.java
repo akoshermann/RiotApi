@@ -8,8 +8,13 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.Objects;
+import java.util.Set;
+
 import hu.hermann.akos.riotapi.R;
+import hu.hermann.akos.riotapi.domain.ChampionDetails;
 import hu.hermann.akos.riotapi.domain.matchhistory.MatchDetails;
+import hu.hermann.akos.riotapi.domain.matchhistory.Participant;
 
 /**
  * Created by hofee on 2016. 05. 12..
@@ -17,9 +22,11 @@ import hu.hermann.akos.riotapi.domain.matchhistory.MatchDetails;
 public class MatchDetailsPlayerAdapter extends RecyclerView.Adapter<MatchDetailsPlayerAdapter.ViewHolder> {
 
     private MatchDetails matchDetails;
+    private Set<ChampionDetails> championDetailsSet;
 
-    public MatchDetailsPlayerAdapter(MatchDetails matchDetails) {
+    public MatchDetailsPlayerAdapter(MatchDetails matchDetails, Set<ChampionDetails> championDetailsSet) {
         this.matchDetails = matchDetails;
+        this.championDetailsSet = championDetailsSet;
     }
 
     @Override
@@ -31,12 +38,16 @@ public class MatchDetailsPlayerAdapter extends RecyclerView.Adapter<MatchDetails
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
+        Participant participant = matchDetails.getParticipants().get(position);
+        for(ChampionDetails championDetails : championDetailsSet){
+            if(Objects.equals(championDetails.getId(), participant.getChampionId())){
+                holder.championIcon.setImageBitmap(championDetails.getBitmap());
+            }
+        }
         holder.summonerNameText.setText(matchDetails.getParticipantIdentities().get(position).getPlayer().getSummonerName());
-//        holder.levelText.setText(matchDetails.getParticipants().get(position).getStats().getChampLevel());
         holder.goldText.setText(String.valueOf(matchDetails.getParticipants().get(position).getStats().getGoldEarned()));
         holder.kdaText.setText(matchDetails.getParticipants().get(position).getStats().getKills() +"/" + matchDetails.getParticipants().get(position).getStats().getDeaths() +"/"+
                                 matchDetails.getParticipants().get(position).getStats().getAssists());
-        holder.championIcon.setImageResource(R.mipmap.ic_launcher);
         if(matchDetails.getParticipants().get(position).getTeamId() == 100){
             holder.cardView.setCardBackgroundColor(0xFFADD0DB);
         } else {
