@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Created by a.hermann on 2016.03.23..
  */
-public class MatchHistory implements Serializable {
+public class RankedMatchHistory implements Serializable {
 
     List<Match> matches;
 

@@ -5,4 +5,5 @@ package hu.hermann.akos.riotapi.contstants;
  */
 public class Flags {
     public static final String MATCH_DETAILS = "MATCH_DETAILS";
+    public static final String SUMMONER = "SUMMONER";
 }

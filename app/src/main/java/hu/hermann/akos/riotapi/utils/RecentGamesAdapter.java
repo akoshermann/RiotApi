@@ -9,21 +9,26 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.Objects;
+import java.util.Set;
+
 import hu.hermann.akos.riotapi.R;
+import hu.hermann.akos.riotapi.domain.ChampionDetails;
+import hu.hermann.akos.riotapi.domain.RecentGame;
+import hu.hermann.akos.riotapi.domain.RecentMatchHistory;
 import hu.hermann.akos.riotapi.domain.matchhistory.RankedMatchHistory;
 
 /**
- * Created by a.hermann on 2016.03.23..
+ * Created by hofee on 2016. 05. 15..
  */
-public class MatchHistoryAdapter extends RecyclerView.Adapter<MatchHistoryAdapter.ViewHolder> {
+public class RecentGamesAdapter extends RecyclerView.Adapter<RecentGamesAdapter.ViewHolder> {
 
-    private RankedMatchHistory rankedMatchHistory;
-    private Context context;
-    private ImageView imageView;
+    private RecentMatchHistory recentMatchHistory;
+    private Set<ChampionDetails> championDetailsSet;
 
-    public MatchHistoryAdapter(Context context, RankedMatchHistory rankedMatchHistory) {
-        this.rankedMatchHistory = rankedMatchHistory;
-        this.context = context;
+    public RecentGamesAdapter(RecentMatchHistory recentMatchHistory, Set<ChampionDetails> championDetailsSet) {
+        this.recentMatchHistory = recentMatchHistory;
+        this.championDetailsSet = championDetailsSet;
     }
 
     @Override
@@ -35,13 +40,25 @@ public class MatchHistoryAdapter extends RecyclerView.Adapter<MatchHistoryAdapte
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.tvChampionName.setText(rankedMatchHistory.getMatches().get(position).getChampionName());
-        holder.ivChampionIcon.setImageBitmap(rankedMatchHistory.getMatches().get(position).getChampionIcon());
+
+        if(recentMatchHistory.getGames().get(position).getStats().isWin()){
+            holder.tvChampionName.setText("Victory");
+            holder.cardView.setCardBackgroundColor(0xFFADD0DB);
+        } else {
+            holder.tvChampionName.setText("Defeat");
+            holder.cardView.setCardBackgroundColor(0xFFD97979);
+        }
+        for(ChampionDetails championDetails : championDetailsSet){
+            if(Objects.equals(championDetails.getId(), recentMatchHistory.getGames().get(position).getChampionId())){
+                holder.ivChampionIcon.setImageBitmap(championDetails.getBitmap());
+            }
+        }
+
     }
 
     @Override
     public int getItemCount() {
-        return rankedMatchHistory.getMatches().size();
+        return recentMatchHistory.getGames().size();
     }
 
 

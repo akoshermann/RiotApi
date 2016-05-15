@@ -9,7 +9,8 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:name=".AppContext">
         <activity
             android:name=".activities.MainActivity"
             android:label="@string/app_name"
@@ -32,6 +33,15 @@
         <activity
             android:name=".activities.MatchDetailsActivity"
             android:label="@string/title_activity_match_details"
+            android:parentActivityName=".activities.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="hu.hermann.akos.riotapi.activities.MainActivity" />
+        </activity>
+        <activity
+            android:name=".activities.RecentGamesActivity"
+            android:label="@string/title_activity_recent_games"
             android:parentActivityName=".activities.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data

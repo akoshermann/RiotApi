@@ -28,12 +28,13 @@ import java.util.Set;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import hu.hermann.akos.riotapi.AppContext;
 import hu.hermann.akos.riotapi.R;
 import hu.hermann.akos.riotapi.contstants.Flags;
 import hu.hermann.akos.riotapi.domain.Champion;
 import hu.hermann.akos.riotapi.domain.ChampionDetails;
 import hu.hermann.akos.riotapi.domain.matchhistory.Match;
-import hu.hermann.akos.riotapi.domain.matchhistory.MatchHistory;
+import hu.hermann.akos.riotapi.domain.matchhistory.RankedMatchHistory;
 import hu.hermann.akos.riotapi.domain.player.Summoner;
 import hu.hermann.akos.riotapi.domain.response.RankInfo;
 import hu.hermann.akos.riotapi.interfaces.IImageLoader;
@@ -51,12 +52,12 @@ public class MainActivity extends AppCompatActivity
 
     private Summoner summoner;
     private RankInfo rankInfo;
-    private MatchHistory matchHistory;
+    private RankedMatchHistory rankedMatchHistory;
     private List<Bitmap> championIcons;
     private int counter;
     private Set<Champion> championSet;
     private List<ChampionDetails> championDetailsList;
-    Set<Long> championIds;
+    private Set<Long> championIds;
 
     @Bind(R.id.tv_summoner_name)
     TextView tvName;
@@ -87,11 +88,11 @@ public class MainActivity extends AppCompatActivity
         if(summoner == null){
             getSummoner();
         } else
-                if(matchHistory == null){
+                if(rankedMatchHistory == null){
                     getMatchHistory(summoner.getId());
                 } else {
                     showInfo();
-                    showMatchHistory(matchHistory);
+                    showMatchHistory(rankedMatchHistory);
                 }
 
     }
@@ -143,6 +144,9 @@ public class MainActivity extends AppCompatActivity
             case R.id.nav_profile:{
                 startActivity(new Intent(MainActivity.this, ProfileActivity.class));
             }
+            case R.id.nav_recent:{
+                startActivity(new Intent(MainActivity.this, RecentGamesActivity.class));
+            }
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -157,6 +161,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
                 String summonerJson = splitStringToUseful(response.body().toString());
+                AppContext.getInstance().getPreferences().edit().putString(Flags.SUMMONER, summonerJson).apply();
                 summoner = new Gson().fromJson(summonerJson, Summoner.class);
                 getSummonerRank(summoner.getId());
                 getMatchHistory(summoner.getId());
@@ -192,25 +197,25 @@ public class MainActivity extends AppCompatActivity
 
     private void getMatchHistory(Long id){
         RiotClient riotClient = ServiceGenerator.createService(RiotClient.class);
-        Call<MatchHistory> call = riotClient.getMatchHistory("eune", id, 0, 10);
-        call.enqueue(new Callback<MatchHistory>() {
+        Call<RankedMatchHistory> call = riotClient.getRankedMatchHistory("eune", id, 0, 10);
+        call.enqueue(new Callback<RankedMatchHistory>() {
             @Override
-            public void onResponse(Call<MatchHistory> call, Response<MatchHistory> response) {
-                matchHistory = response.body();
-                getChampions(matchHistory);
+            public void onResponse(Call<RankedMatchHistory> call, Response<RankedMatchHistory> response) {
+                rankedMatchHistory = response.body();
+                getChampions(rankedMatchHistory);
             }
 
             @Override
-            public void onFailure(Call<MatchHistory> call, Throwable t) {
+            public void onFailure(Call<RankedMatchHistory> call, Throwable t) {
 
             }
         });
     }
 
-    private void getChampions(final MatchHistory matchHistory) {
+    private void getChampions(final RankedMatchHistory rankedMatchHistory) {
         championIds = new HashSet<>();
         counter = 0;
-        for(Match match : matchHistory.getMatches()){
+        for(Match match : rankedMatchHistory.getMatches()){
             championIds.add(match.getChampion());
         }
         for(Long id : championIds){
@@ -243,8 +248,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void addIconsToModel() {
-        for(int i = 0; i < matchHistory.getMatches().size(); ++i){
-            Long currentChampionId = matchHistory.getMatches().get(i).getChampion();
+        for(int i = 0; i < rankedMatchHistory.getMatches().size(); ++i){
+            Long currentChampionId = rankedMatchHistory.getMatches().get(i).getChampion();
             ChampionDetails championDetails=null;
             for(ChampionDetails champion : championDetailsList){
                 if(Objects.equals(champion.getId(), currentChampionId)){
@@ -252,21 +257,21 @@ public class MainActivity extends AppCompatActivity
                 }
             }
             if(championDetails != null) {
-                matchHistory.getMatches().get(i).setChampionIcon(championDetails.getBitmap());
+                rankedMatchHistory.getMatches().get(i).setChampionIcon(championDetails.getBitmap());
             }
         }
-        showMatchHistory(matchHistory);
+        showMatchHistory(rankedMatchHistory);
     }
 
-    private void showMatchHistory(final MatchHistory matchHistory) {
-        MatchHistoryAdapter adapter = new MatchHistoryAdapter(MainActivity.this, matchHistory);
+    private void showMatchHistory(final RankedMatchHistory rankedMatchHistory) {
+        MatchHistoryAdapter adapter = new MatchHistoryAdapter(MainActivity.this, rankedMatchHistory);
         matchHistoryRecyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
         matchHistoryRecyclerView.setAdapter(adapter);
         matchHistoryRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(MainActivity.this, new RecyclerItemClickListener.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
                 Intent intent = new Intent(MainActivity.this, MatchDetailsActivity.class);
-                intent.putExtra(Flags.MATCH_DETAILS, matchHistory.getMatches().get(position).getMatchId());
+                intent.putExtra(Flags.MATCH_DETAILS, rankedMatchHistory.getMatches().get(position).getMatchId());
                 startActivity(intent);
             }
         }));
